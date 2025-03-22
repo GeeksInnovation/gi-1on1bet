@@ -1,0 +1,48 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+	  {
+		"label": "Run Auth Service",
+		"type": "shell",
+		"command": "cd 1on1bet-be/authservice && mvn spring-boot:run",
+		"problemMatcher": [],
+		"presentation": {
+		  "echo": true,
+		  "focus": true,
+		  "panel": "new",
+		  "reveal": "always"
+		}
+	  },
+	  {
+		"label": "Run Betting Service",
+		"type": "shell",
+		"command": "cd 1on1bet-be/bettingservice && mvn spring-boot:run",
+		"problemMatcher": [],
+		"presentation": {
+		  "echo": true,
+		  "focus": true,
+		  "panel": "new",
+		  "reveal": "always"
+		}
+	  },
+	  {
+		"label": "Run Payment Service",
+		"type": "shell",
+		"command": "cd 1on1bet-be/paymentservice && mvn spring-boot:run",
+		"problemMatcher": [],
+		"presentation": {
+		  "echo": true,
+		  "focus": true,
+		  "panel": "new",
+		  "reveal": "always"
+		}
+	  },
+	  {
+		"label": "Run All Services",
+		"dependsOn": ["Run Auth Service", "Run Betting Service", "Run Payment Service"],
+		"runOptions": {
+		  "runOn": "default"
+		}
+	  }
+	]
+}
