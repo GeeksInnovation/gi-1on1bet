@@ -17,6 +17,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup Maven Authentication
+        run: |
+          mkdir -p ~/.m2
+          cat <<EOF > ~/.m2/settings.xml
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ secrets.GH_USERNAME }}</username>
+                <password>${{ secrets.GH_PAT }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
       - name: Set Backend Directory
         run: |
           cd 1on1bet-be
