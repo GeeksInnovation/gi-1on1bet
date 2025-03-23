@@ -1,10 +1,11 @@
 name: Run Tests
 
 on:
-  workflow_run:
-    workflows: ["Detect Changes"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      project:
+        required: false
+        type: string
 
 jobs:
   test:
