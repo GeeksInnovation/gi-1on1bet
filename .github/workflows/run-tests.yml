@@ -1,11 +1,14 @@
 name: Run Tests
 
 on:
-  workflow_call:
-    inputs:
-      project:
-        required: false
-        type: string
+  push:
+    branches:
+      - main
+      - feat/**
+
+  pull_request:
+    branches:
+      - main 
 
 jobs:
   test:
