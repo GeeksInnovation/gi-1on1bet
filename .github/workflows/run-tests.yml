@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Maven Authentication
+      - name: Setup Maven Authentication & Repositories
         run: |
           mkdir -p ~/.m2
           cat <<EOF > ~/.m2/settings.xml
@@ -29,6 +29,30 @@ jobs:
                 <password>${{ secrets.GH_PAT }}</password>
               </server>
             </servers>
+            <mirrors>
+              <mirror>
+                <id>central</id>
+                <mirrorOf>central</mirrorOf>
+                <url>https://repo1.maven.org/maven2</url>
+              </mirror>
+            </mirrors>
+            <profiles>
+              <profile>
+                <id>github</id>
+                <repositories>
+                  <repository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/geeksinnovation/gi-1on1bet-utils</url>
+                    <snapshots>
+                      <enabled>true</enabled>
+                    </snapshots>
+                  </repository>
+                </repositories>
+              </profile>
+            </profiles>
+            <activeProfiles>
+              <activeProfile>github</activeProfile>
+            </activeProfiles>
           </settings>
           EOF
 
