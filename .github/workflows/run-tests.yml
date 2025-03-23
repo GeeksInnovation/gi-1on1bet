@@ -17,5 +17,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set Backend Directory
+        run: |
+          cd 1on1bet-be
+          echo "Current Directory: $(pwd)"
+
       - name: Run Tests for All Projects
-        run: mvn clean test
+        run: |
+          cd 1on1bet-be
+          for project in */; do
+            if [ -d "$project" ]; then
+              echo "Running tests for $project..."
+              cd "$project"
+              mvn clean test
+              cd ..
+            fi
+          done
