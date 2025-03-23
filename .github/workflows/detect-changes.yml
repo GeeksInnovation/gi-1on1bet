@@ -1,0 +1,33 @@
+name: Detect Changes
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      project: ${{ steps.detect.outputs.project }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Detect Changed Project
+        id: detect
+        run: |
+          CHANGED_PROJECT=""
+          if git diff --name-only HEAD~1 HEAD | grep -q "1on1bet-be/authservice/"; then
+            CHANGED_PROJECTS+=("authservice")
+          elif git diff --name-only HEAD~1 HEAD | grep -q "1on1bet-be/bettingservice/"; then
+            CHANGED_PROJECTS+=("bettingservice")
+          elif git diff --name-only HEAD~1 HEAD | grep -q "1on1bet-be/paymentservice/"; then
+            CHANGED_PROJECTS+=("paymentservice")
+          fi
+          echo "Changed project: $CHANGED_PROJECT"
+          echo "project=$CHANGED_PROJECT" >> "$GITHUB_ENV"

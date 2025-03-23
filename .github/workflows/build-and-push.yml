@@ -1,0 +1,28 @@
+name: Build and Push Images
+
+on:
+  workflow_run:
+    workflows: ["Detect Changes"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.detect.outputs.projects) }}
+    needs: detect
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          cd backend/${{ matrix.project }}
+          docker build -t ghcr.io/your-org/${{ matrix.project }}:latest .
+
+      - name: Push Docker Image
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u your-username --password-stdin
+          docker push ghcr.io/your-org/${{ matrix.project }}:latest
