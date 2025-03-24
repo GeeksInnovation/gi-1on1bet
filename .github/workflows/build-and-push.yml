@@ -22,6 +22,7 @@ jobs:
           mkdir -p ~/.m2
           echo "${{ secrets.GH_MAVEN_SETTINGS }}" | base64 --decode > ~/.m2/settings.xml
           cp ~/.m2/settings.xml 1on1bet-be/settings.xml
+          ls -l 1on1bet-be 
 
       - name: Build Docker Image
         run: |
