@@ -19,8 +19,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          cd 1on1bet-be/${{ matrix.project }}
-          docker build -t ghcr.io/your-org/${{ matrix.project }}:latest .
+          docker build -t ghcr.io/your-org/${{ matrix.project }}:latest -f 1on1bet-be/${{ matrix.project }}/Dockerfile 1on1bet-be/
 
       - name: Push Docker Image
         run: |
