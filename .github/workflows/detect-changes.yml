@@ -13,7 +13,7 @@ jobs:
   detect:
     runs-on: ubuntu-latest
     outputs:
-      project: ${{ steps.detect.outputs.project }}
+      projects: ${{ steps.detect.outputs.projects }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
             echo "No projects changed."
             echo "projects=[]" >> "$GITHUB_OUTPUT"
           else
-            JSON_ARRAY="[${CHANGED_PROJECTS[*]}]"
+            JSON_ARRAY=$(printf '%s\n' "${CHANGED_PROJECTS[@]}" | jq -R . | jq -s .)
             echo "Changed projects: $JSON_ARRAY"
             echo "projects=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
           fi
