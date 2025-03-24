@@ -57,7 +57,7 @@ jobs:
             echo "No projects changed."
             echo "projects=[]" >> "$GITHUB_OUTPUT"
           else
-            JSON_ARRAY=$(printf '%s\n' "${CHANGED_PROJECTS[@]}" | jq -R . | jq -s .)
+            JSON_ARRAY=$(printf '%s\n' "${CHANGED_PROJECTS[@]}" | jq -R . | jq -s -c .)
             echo "Changed projects: $JSON_ARRAY"
             echo "projects=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
           fi
