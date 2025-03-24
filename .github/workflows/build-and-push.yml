@@ -2,6 +2,10 @@ name: Build and Push Images
 
 on:
   workflow_call:
+    inputs:
+      projects:
+        required: true
+        type: string
   
 jobs:
   build:
