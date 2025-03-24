@@ -26,7 +26,7 @@ public class RegisterService {
        log.info("Cheking is mobile number and country is valid {} {}", mobileNo,countryCode);
        boolean isMobileNoValid = validationUtil.validMobileNumber(mobileNo, countryCode);
        if(isMobileNoValid) {
-          log.info("Mobile number and country code is valid, checking user aldready exists or not");
+          log.info("Mobile number and country code is valid, checking user aldready exists or not in DB");
         
        }
        return _on1betResponseBuilder.buildFailureResponse("Mobile number or country code is invalid");
