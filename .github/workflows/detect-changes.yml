@@ -55,13 +55,10 @@ jobs:
 
           if [ ${#CHANGED_PROJECTS[@]} -eq 0 ]; then
             echo "No projects changed."
+            echo "projects=[]" >> "$GITHUB_OUTPUT"
           else
-            echo "Changed projects: ${CHANGED_PROJECTS[@]}"
+            JSON_ARRAY="[${CHANGED_PROJECTS[*]}]"
+            echo "Changed projects: $JSON_ARRAY"
+            echo "projects=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
           fi
-
-          CHANGED_PROJECT=$(IFS=,; echo "${CHANGED_PROJECTS[*]}")  # Convert array to comma-separated string
-          echo "Final Changed Project: $CHANGED_PROJECT"
-
-          echo "project=$CHANGED_PROJECT" >> "$GITHUB_ENV"
-          echo "::set-output name=project::$CHANGED_PROJECT"
 
