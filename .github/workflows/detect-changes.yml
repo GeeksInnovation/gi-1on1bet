@@ -17,16 +17,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Detect Changed Project
         id: detect
         run: |
           CHANGED_PROJECT=""
-          if git diff --name-only HEAD~1 HEAD | grep -q "1on1bet-be/authservice/"; then
+          git fetch origin main  # Ensure we have the latest main branch
+
+          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/authservice/"; then
             CHANGED_PROJECTS+=("authservice")
-          elif git diff --name-only HEAD~1 HEAD | grep -q "1on1bet-be/bettingservice/"; then
+          elif git diff --name-only origin/main HEAD | grep -q "1on1bet-be/bettingservice/"; then
             CHANGED_PROJECTS+=("bettingservice")
-          elif git diff --name-only HEAD~1 HEAD | grep -q "1on1bet-be/paymentservice/"; then
+          elif git diff --name-only origin/main HEAD | grep -q "1on1bet-be/paymentservice/"; then
             CHANGED_PROJECTS+=("paymentservice")
           fi
           echo "Changed project: $CHANGED_PROJECT"
