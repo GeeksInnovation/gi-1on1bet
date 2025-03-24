@@ -10,13 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.google.i18n.phonenumbers.NumberParseException;
 
 @SpringBootTest
-public class ValidationUtilTest {
+class ValidationUtilTest {
     
     @Autowired
     private ValidationUtil validationUtil;
 
     @Test
-    public void validMobileNumberAndCountryCode() throws NumberParseException {
+    void validMobileNumberAndCountryCode() throws NumberParseException {
 
         String mobileNo = "9876543210";
         String countryCode = "IN";
@@ -25,7 +25,7 @@ public class ValidationUtilTest {
     }
 
     @Test
-    public void inValidMobileNumberAndCountryCode() throws NumberParseException {
+    void inValidMobileNumberAndCountryCode() throws NumberParseException {
 
         String mobileNo = "9876543210";
         String countryCode = "US";
