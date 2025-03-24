@@ -13,11 +13,11 @@ jobs:
     secrets: inherit 
 
   detect-changes:
-    if: github.ref != 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/detect-changes.yml  
 
   build-and-push:
-    if: github.ref != 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     secrets: inherit 
     needs:
       - run-tests
