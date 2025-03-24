@@ -1,0 +1,27 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feat/**
+
+jobs:
+  run-tests:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feat/')
+    uses: ./.github/workflows/run-tests.yml  
+    secrets: inherit 
+
+  detect-changes:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/detect-changes.yml  
+
+  build-and-push:
+    if: github.ref == 'refs/heads/main'
+    secrets: inherit 
+    needs:
+      - run-tests
+      - detect-changes 
+    uses: ./.github/workflows/build-and-push.yml  
+    with:
+      projects: ${{ needs.detect-changes.outputs.projects }}

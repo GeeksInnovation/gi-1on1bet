@@ -1,0 +1,34 @@
+name: Run Tests
+
+on:
+  workflow_call:
+  
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Maven Authentication & Repositories
+        run: |
+          mkdir -p ~/.m2
+          echo "${{ secrets.GH_MAVEN_SETTINGS }}" | base64 --decode > ~/.m2/settings.xml
+         
+      - name: Set Backend Directory
+        run: |
+          cd 1on1bet-be
+          echo "Current Directory: $(pwd)"
+
+      - name: Run Tests for All Projects
+        run: |
+          cd 1on1bet-be
+          for project in */; do
+            if [ -d "$project" ]; then
+              echo "Running tests for $project..."
+              cd "$project"
+              mvn clean test
+              cd ..
+            fi
+          done

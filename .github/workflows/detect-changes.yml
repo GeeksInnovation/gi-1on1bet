@@ -1,0 +1,62 @@
+name: Detect Changes
+
+on:
+  workflow_call:
+    outputs:
+      projects:
+        description: "List of changed projects"
+        value: ${{ jobs.detect.outputs.projects }}
+  
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.detect.outputs.projects }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Debug Git Fetch
+        run: |
+          git fetch origin main
+          echo "Git branches available:"
+          git branch -a
+          echo "Current branch:"
+          git rev-parse --abbrev-ref HEAD
+
+      - name: Detect Changed Project
+        id: detect
+        run: |
+          git fetch origin main  # Ensure we have the latest main branch
+
+          echo "Checking differences between origin/main and HEAD..."
+          git diff --name-only origin/main HEAD
+
+          CHANGED_PROJECTS=()
+
+          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/authservice/"; then
+            echo "Auth service changed"
+            CHANGED_PROJECTS+=("authservice")
+          fi
+
+          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/bettingservice/"; then
+            echo "Betting service changed"
+            CHANGED_PROJECTS+=("bettingservice")
+          fi
+
+          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/paymentservice/"; then
+            echo "Payment service changed"
+            CHANGED_PROJECTS+=("paymentservice")
+          fi
+
+          if [ ${#CHANGED_PROJECTS[@]} -eq 0 ]; then
+            echo "No projects changed."
+            echo "projects=[]" >> "$GITHUB_OUTPUT"
+          else
+            JSON_ARRAY=$(printf '%s\n' "${CHANGED_PROJECTS[@]}" | jq -R . | jq -s -c .)
+            echo "Changed projects: $JSON_ARRAY"
+            echo "projects=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
+          fi
+
