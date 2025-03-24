@@ -16,13 +16,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+       
       - name: Create Maven Settings File
         run: |
-          mkdir -p ~/.m2
-          echo "${{ secrets.GH_MAVEN_SETTINGS }}" | base64 --decode > ~/.m2/settings.xml
-          cp ~/.m2/settings.xml 1on1bet-be/settings.xml
+          echo "${{ secrets.GH_MAVEN_SETTINGS }}" | base64 --decode > 1on1bet-be/settings.xml
           ls -l 1on1bet-be 
+           cat 1on1bet-be/settings.xml 
 
       - name: Build Docker Image
         run: |
