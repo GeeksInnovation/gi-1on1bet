@@ -1,19 +1,5 @@
 name: Detect Changes
 
-on:
-  push:
-    branches:
-      - main
-      - feat/**
-  pull_request:
-    branches:
-      - main
-  workflow_call:
-    outputs:
-      projects:
-        description: "List of changed projects"
-        value: ${{ jobs.detect.outputs.projects }}
-
 jobs:
   detect:
     runs-on: ubuntu-latest

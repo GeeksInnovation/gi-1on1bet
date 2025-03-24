@@ -1,15 +1,5 @@
 name: Run Tests
 
-on:
-  push:
-    branches:
-      - main
-      - feat/**
-
-  pull_request:
-    branches:
-      - main 
-
 jobs:
   test:
     runs-on: ubuntu-latest
