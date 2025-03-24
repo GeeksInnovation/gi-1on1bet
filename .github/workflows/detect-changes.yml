@@ -1,5 +1,8 @@
 name: Detect Changes
 
+on:
+  workflow_call:
+  
 jobs:
   detect:
     runs-on: ubuntu-latest

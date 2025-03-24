@@ -1,5 +1,8 @@
 name: Build and Push Images
 
+on:
+  workflow_call:
+  
 jobs:
   build:
     runs-on: ubuntu-latest
