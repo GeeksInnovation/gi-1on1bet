@@ -31,8 +31,4 @@ public class RegisterService {
        }
        return _on1betResponseBuilder.buildFailureResponse("Mobile number or country code is invalid");
     }
-
-    // public Boolean isUserExists(String mobileNo) {
-    // change in one line one line test test just testing
-    // }
 }
