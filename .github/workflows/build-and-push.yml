@@ -16,9 +16,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Setup Maven Settings
-        run: echo "${{ secrets.GH_MAVEN_SETTINGS }}" > settings.xml
+        
+      - name: Configure Maven Settings
+        run: |
+          mkdir -p ~/.m2
+          echo "${{ secrets.GH_MAVEN_SETTINGS }}" | base64 --decode > ~/.m2/settings.xml
 
       - name: Build Docker Image
         run: |
