@@ -36,8 +36,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://github-actions:${{ secrets.GH_TAG_TOKEN }}@github.com/GeeksInnovation/gi-1on1bet.git
 
+          git fetch --tags
           git tag $NEW_TAG
-          git push origin $NEW_TAG
+          git push origin --tags
 
           echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
 
