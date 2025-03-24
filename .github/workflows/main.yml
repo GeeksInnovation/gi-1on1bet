@@ -21,6 +21,7 @@ jobs:
 
   build-and-push:
     if: github.ref != 'refs/heads/main'
+    needs:
       - run-tests
       - detect-changes 
     uses: ./.github/workflows/build-and-push.yml  
