@@ -23,37 +23,19 @@ jobs:
           ls -l 1on1bet-be 
           cat 1on1bet-be/settings.xml 
 
-      - name: Create and push new tag
+      - name: Get Commit SHA
         run: |
-          git fetch --tags
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          VERSION_PARTS=(${TAG//./ })
-          PATCH_VERSION=${VERSION_PARTS[2]}
-          if ! [[ "$PATCH_VERSION" =~ ^[0-9]+$ ]]; then
-            PATCH_VERSION=0
-          fi
-          NEW_PATCH_VERSION=$((PATCH_VERSION + 1))
-          NEW_TAG="v${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$NEW_PATCH_VERSION"
-          
-          # Set up Git authentication using the token
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://github-actions:${{ secrets.GH_TAG_TOKEN }}@github.com/GeeksInnovation/gi-1on1bet.git
-
-          git fetch --tags
-          git tag $NEW_TAG
-          git push origin --tags
-
-          echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "COMMIT_SHA=${COMMIT_SHA}" >> $GITHUB_ENV
 
 
       - name: Build Docker Image
         run: |
           docker build --build-arg MAVEN_CONFIG=settings.xml \
-            -t ghcr.io/geeksinnovation/gi-1on1bet/${{ matrix.project }}:${{ env.NEW_TAG }} \
+            -t ghcr.io/geeksinnovation/gi-1on1bet/${{ matrix.project }}:${{ env.COMMIT_SHA }} \
             -f 1on1bet-be/${{ matrix.project }}/Dockerfile 1on1bet-be/
 
       - name: Push Docker Image
         run: |
           echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u ${{ github.actor }}  --password-stdin
-          docker push ghcr.io/geeksinnovation/gi-1on1bet/${{ matrix.project }}:${{ env.NEW_TAG }}
+          docker push ghcr.io/geeksinnovation/gi-1on1bet/${{ matrix.project }}:${{ env.COMMIT_SHA }}
