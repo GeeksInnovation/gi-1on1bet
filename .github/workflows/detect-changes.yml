@@ -29,24 +29,29 @@ jobs:
       - name: Detect Changed Project
         id: detect
         run: |
-          git fetch origin main  # Ensure we have the latest main branch
+          git fetch origin main
 
-          echo "Checking differences between origin/main and HEAD..."
-          git diff --name-only origin/main HEAD
+          MERGE_COMMIT=$(git rev-parse HEAD)
+          echo "Latest commit (merge commit): $MERGE_COMMIT"
+          
+          PREVIOUS_COMMIT=$(git rev-parse HEAD^)
+          echo "Previous commit before merge: $PREVIOUS_COMMIT"
+          
+          git diff --name-only $PREVIOUS_COMMIT $MERGE_COMMIT
 
           CHANGED_PROJECTS=()
 
-          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/authservice/"; then
+          if git diff --name-only $PREVIOUS_COMMIT $MERGE_COMMIT | grep -q "1on1bet-be/authservice/"; then
             echo "Auth service changed"
             CHANGED_PROJECTS+=("authservice")
           fi
 
-          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/bettingservice/"; then
+          if git diff --name-only $PREVIOUS_COMMIT $MERGE_COMMIT | grep -q "1on1bet-be/bettingservice/"; then
             echo "Betting service changed"
             CHANGED_PROJECTS+=("bettingservice")
           fi
 
-          if git diff --name-only origin/main HEAD | grep -q "1on1bet-be/paymentservice/"; then
+          if git diff --name-only $PREVIOUS_COMMIT $MERGE_COMMIT | grep -q "1on1bet-be/paymentservice/"; then
             echo "Payment service changed"
             CHANGED_PROJECTS+=("paymentservice")
           fi
