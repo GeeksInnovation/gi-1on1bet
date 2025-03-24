@@ -13,15 +13,15 @@ jobs:
 
   run-tests:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feat/')
-    uses: geeksinnovation/1on1bet/.github/workflows/run-tests.yml  
+    uses: ./.github/workflows/run-tests.yml  
 
   detect-changes:
     if: github.ref == 'refs/heads/main'
-    uses: geeksinnovation/1on1bet/.github/workflows/detect-changes.yml  
+    uses: ./.github/workflows/detect-changes.yml  
 
   build-and-push:
     if: github.ref == 'refs/heads/main'
     needs: detect-changes
-    uses: geeksinnovation/1on1bet/.github/workflows/build-and-push.yml  
+    uses: ./.github/workflows/build-and-push.yml  
     with:
       projects: ${{ needs.detect-changes.outputs.projects }}
