@@ -1,5 +1,7 @@
 FROM maven:3.8.6-eclipse-temurin-17 AS builder
 WORKDIR /app
+
+COPY settings.xml /root/.m2/settings.xml
 COPY pom.xml ./pom.xml
 
 WORKDIR /app/authservice

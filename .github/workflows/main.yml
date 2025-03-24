@@ -21,6 +21,7 @@ jobs:
 
   build-and-push:
     if: github.ref != 'refs/heads/main'
+    secrets: inherit 
     needs:
       - run-tests
       - detect-changes 
