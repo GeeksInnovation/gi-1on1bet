@@ -10,7 +10,6 @@ on:
       - main
 
 jobs:
-
   run-tests:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feat/')
     uses: ./.github/workflows/run-tests.yml  
@@ -19,9 +18,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/detect-changes.yml  
 
-  build-and-push:
-    if: github.ref == 'refs/heads/main'
-    needs: detect-changes
-    uses: ./.github/workflows/build-and-push.yml  
-    with:
-      projects: ${{ needs.detect-changes.outputs.projects }}
+  # build-and-push:
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: detect-changes
+  #   uses: ./.github/workflows/build-and-push.yml  
+  #   with:
+  #     projects: ${{ needs.detect-changes.outputs.projects }}
