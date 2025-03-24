@@ -19,11 +19,15 @@ jobs:
         
       - name: Create Maven Settings File
         run: |
-          echo "${{ secrets.MAVEN_SETTINGS }}" | base64 --decode > 1on1bet-be/settings.xml
+          mkdir -p ~/.m2
+          echo "${{ secrets.GH_MAVEN_SETTINGS }}" | base64 --decode > ~/.m2/settings.xml
+          cp ~/.m2/settings.xml 1on1bet-be/settings.xml
 
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/your-org/${{ matrix.project }}:latest -f 1on1bet-be/${{ matrix.project }}/Dockerfile 1on1bet-be/
+          docker build --build-arg MAVEN_CONFIG=/root/.m2/settings.xml \
+            -t ghcr.io/your-org/${{ matrix.project }}:latest \
+            -f 1on1bet-be/${{ matrix.project }}/Dockerfile 1on1bet-be/
 
       - name: Push Docker Image
         run: |
