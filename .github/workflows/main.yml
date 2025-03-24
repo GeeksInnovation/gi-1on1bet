@@ -13,6 +13,7 @@ jobs:
   run-tests:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feat/')
     uses: ./.github/workflows/run-tests.yml  
+    secrets: inherit 
 
   detect-changes:
     if: github.ref == 'refs/heads/main'
