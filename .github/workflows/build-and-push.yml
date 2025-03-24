@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: ${{ fromJson(needs.detect.outputs.projects) }}
+        project: ${{ fromJson(inputs.projects) }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
