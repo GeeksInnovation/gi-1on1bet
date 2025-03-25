@@ -1,6 +1,9 @@
 package com._on1bet.authservice.service;
 
 
+import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS;
+import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -11,7 +14,6 @@ import com._on1bet.authservice.util.RedisService;
 import com._on1bet.authservice.util.ValidationUtil;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 import com._on1betutils.utils1on1bet._on1BetResponse;
-import com.google.i18n.phonenumbers.NumberParseException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,25 +36,25 @@ public class RegisterService {
         this.utilRepo = utilRepo;
     }
 
-    public _on1BetResponse<OTPResponse> generateOTP(Long mobileNo, Integer countryCode) throws NumberParseException {
+    public _on1BetResponse<OTPResponse> generateOTP(Long mobileNo, Integer countryCode) {
 
-        log.info("Cheking is mobile number and country is valid {} {}", mobileNo, countryCode);
+        log.info("Checking is mobile number and country is valid {} {}", mobileNo, countryCode);
         String isoCode = extractCountryCode(countryCode);
 
         if (!StringUtils.hasText(isoCode)) {
-            return _on1betResponseBuilder.buildFailureResponse("Mobile number or country code is invalid");
+            return _on1betResponseBuilder.buildFailureResponse(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID);
         }
 
         boolean isMobileNoValid = validationUtil.validMobileNumber(mobileNo.toString(), isoCode);
         if (!isMobileNoValid) {
-            return _on1betResponseBuilder.buildFailureResponse("Mobile number or country code is invalid");
+            return _on1betResponseBuilder.buildFailureResponse(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID);
         }
 
         log.info("Mobile number and country code is valid, checking user aldready exists or not in DB");
         boolean isUserExits = userDetailsRepo.existsById(mobileNo);
         if (isUserExits) {
             log.info("Mobile number {} aldready exists", mobileNo);
-            return _on1betResponseBuilder.buildFailureResponse("Mobile number aldready exits");
+            return _on1betResponseBuilder.buildFailureResponse(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS);
         }
 
         log.info("Generating OTP for mobile number {}", mobileNo);

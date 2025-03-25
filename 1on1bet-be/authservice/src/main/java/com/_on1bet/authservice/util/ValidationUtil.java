@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ValidationUtil {
 
-    public boolean validMobileNumber(String mobileNo, String countryCode) throws NumberParseException {
+    public boolean validMobileNumber(String mobileNo, String countryCode) {
 
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         try {
