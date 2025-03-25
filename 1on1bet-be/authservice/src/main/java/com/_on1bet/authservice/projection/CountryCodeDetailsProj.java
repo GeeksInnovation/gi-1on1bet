@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CountryCodeDetailsProj {
     private Integer id;
-    private String isoCode;
+    private String name;
     private String dialCode;
 }

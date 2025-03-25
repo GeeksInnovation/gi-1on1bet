@@ -1,12 +1,13 @@
 package com._on1bet.authservice.service;
 
-
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS;
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com._on1bet.authservice.exception.CountryCodeOrMobileNumberInvalidException;
+import com._on1bet.authservice.exception.UserAldreadyExitException;
 import com._on1bet.authservice.model.response.OTPResponse;
 import com._on1bet.authservice.repo.UserDetailsRepo;
 import com._on1bet.authservice.repo.UtilRepo;
@@ -16,6 +17,7 @@ import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 import com._on1betutils.utils1on1bet._on1BetResponse;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
@@ -36,33 +38,41 @@ public class RegisterService {
         this.utilRepo = utilRepo;
     }
 
-    public _on1BetResponse<OTPResponse> generateOTP(Long mobileNo, Integer countryCode) {
+    public Mono<_on1BetResponse<OTPResponse>>  generateOTP(Long mobileNo, Integer countryCode) {
 
-        log.info("Checking is mobile number and country is valid {} {}", mobileNo, countryCode);
-        String isoCode = extractCountryCode(countryCode);
-
-        if (!StringUtils.hasText(isoCode)) {
-            return _on1betResponseBuilder.buildFailureResponse(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID);
-        }
-
-        boolean isMobileNoValid = validationUtil.validMobileNumber(mobileNo.toString(), isoCode);
-        if (!isMobileNoValid) {
-            return _on1betResponseBuilder.buildFailureResponse(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID);
-        }
-
-        log.info("Mobile number and country code is valid, checking user aldready exists or not in DB");
-        boolean isUserExits = userDetailsRepo.existsById(mobileNo);
-        if (isUserExits) {
-            log.info("Mobile number {} aldready exists", mobileNo);
-            return _on1betResponseBuilder.buildFailureResponse(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS);
-        }
-
-        log.info("Generating OTP for mobile number {}", mobileNo);
-        String generatedOTP = redisService.generateAndStoreOTP(mobileNo);
-        return _on1betResponseBuilder.buildSuccessResponse(OTPResponse.builder().otp(generatedOTP).build());
+        return extractCountryCode(countryCode)
+        .flatMap(isoCode -> validateMobileNumber(mobileNo, isoCode))
+        .flatMap(valid -> checkUserExists(mobileNo))
+        .flatMap(valid -> generateOtp(mobileNo))
+        .onErrorResume(this::handleError);
     }
 
-    public String extractCountryCode(Integer countryCode) {
-        return utilRepo.getIsoCodeFromId(countryCode);
+    private Mono<String> extractCountryCode(Integer countryCode) {
+        return utilRepo.getIsoCodeFromId(countryCode).filter(StringUtils::hasText).switchIfEmpty(
+                Mono.error(new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID)));
+    }
+
+    private Mono<Boolean> validateMobileNumber(Long mobileNo, String isoCode) {
+        return validationUtil.validMobileNumber(mobileNo.toString(), isoCode)
+            ? Mono.just(true)
+            : Mono.error(new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID));
+    }
+
+    private Mono<Boolean> checkUserExists(Long mobileNo) {
+        return userDetailsRepo.existsById(mobileNo)
+            ? Mono.error(new UserAldreadyExitException(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS))
+            : Mono.just(true);
+    }
+
+    private Mono<_on1BetResponse<OTPResponse>> generateOtp(Long mobileNo) {
+        return redisService.generateAndStoreOTP(mobileNo)
+            .map(otp -> _on1betResponseBuilder.buildSuccessResponse(OTPResponse.builder().otp(otp).build()));
+    }
+
+    private Mono<_on1BetResponse<OTPResponse>> handleError(Throwable ex) {
+        if (ex instanceof UserAldreadyExitException || ex instanceof CountryCodeOrMobileNumberInvalidException) {
+            return Mono.just(_on1betResponseBuilder.buildFailureResponse(ex.getMessage()));
+        }
+        return Mono.error(ex);
     }
 }

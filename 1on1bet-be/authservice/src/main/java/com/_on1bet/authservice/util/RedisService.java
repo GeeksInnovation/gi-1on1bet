@@ -3,6 +3,7 @@ package com._on1bet.authservice.util;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -22,12 +23,12 @@ public class RedisService {
         this.redisTemplate = redisTemplate;
     }
 
-    public String generateAndStoreOTP (Long mobileNo) {
+    public Mono<String> generateAndStoreOTP (Long mobileNo) {
 
         String otp = String.format("%06d", (100000 + random.nextInt(900000)));
         log.info("OTP created and stored for 1 minute");
         redisTemplate.opsForValue().set(mobileNo.toString(), otp , OTP_EXPIRY_TIME, TimeUnit.MINUTES);
-        return otp;
+        return Mono.just(otp);
     }
     
 }

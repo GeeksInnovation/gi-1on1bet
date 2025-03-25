@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com._on1bet.authservice.projection.CountryCodeDetailsProj;
 
+import reactor.core.publisher.Mono;
+
 @Repository
 public class UtilRepoImpl implements UtilRepo {
 
@@ -18,21 +20,21 @@ public class UtilRepoImpl implements UtilRepo {
     }
 
     @Override
-    public String getIsoCodeFromId(Integer id) {
+    public Mono<String> getIsoCodeFromId(Integer id) {
         String sql = "SELECT iso_code FROM country_code WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, String.class, id);
+            return Mono.just(jdbcTemplate.queryForObject(sql, String.class, id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Mono.just(null);
         }
     }
 
     @Override
     public List<CountryCodeDetailsProj> fetchCountryCodeDetails() {
-        String sql = "SELECT id, iso_code, dial_code FROM country_code";
+        String sql = "SELECT id, name, dial_code FROM country_code";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new CountryCodeDetailsProj(
                 rs.getInt("id"),
-                rs.getString("iso_code"),
+                rs.getString("name"),
                 rs.getString("dial_code")));
     }
 
