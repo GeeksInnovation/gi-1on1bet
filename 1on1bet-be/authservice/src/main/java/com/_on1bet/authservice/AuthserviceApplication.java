@@ -2,10 +2,10 @@ package com._on1bet.authservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com._on1bet.authservice.repo")
+@ComponentScan(basePackages = "com._on1bet.authservice") 
 public class AuthserviceApplication {
 
 	public static void main(String[] args) {

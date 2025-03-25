@@ -1,7 +1,16 @@
 package com._on1bet.authservice.projection;
 
-public interface CountryCodeDetailsProj {
-    Integer getId();
-    String getIsoCode();
-    String getDialCode();
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class CountryCodeDetailsProj {
+    private Integer id;
+    private String isoCode;
+    private String dialCode;
 }

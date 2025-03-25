@@ -1,12 +1,12 @@
 package com._on1bet.authservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com._on1bet.authservice.repo.UserDetailsRepo;
 import com._on1bet.authservice.repo.UtilRepo;
@@ -17,7 +17,7 @@ import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 @SpringBootTest
 class RegisterServiceTest {
 
-  @Autowired
+    @Autowired
     RegisterService registerService;
 
     @Mock
@@ -37,9 +37,14 @@ class RegisterServiceTest {
 
     @Test
     void testValidExtractCountryCode() {
-
         Integer countryCode = 55;
         assertNotNull(registerService.extractCountryCode(countryCode));
+    }
+
+    @Test
+    void testInvalidExtractCountryCode() {
+        Integer countryCode = 9999;
+        assertNull(registerService.extractCountryCode(countryCode));
     }
 
 }
