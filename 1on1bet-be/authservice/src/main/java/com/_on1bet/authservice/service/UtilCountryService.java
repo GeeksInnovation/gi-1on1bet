@@ -1,11 +1,8 @@
 package com._on1bet.authservice.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import com._on1bet.authservice.model.response.CountryCodeListResponse;
-import com._on1bet.authservice.projection.CountryCodeDetailsProj;
 import com._on1bet.authservice.repo.UtilRepo;
 import com._on1betutils.utils1on1bet._on1BetResponse;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
