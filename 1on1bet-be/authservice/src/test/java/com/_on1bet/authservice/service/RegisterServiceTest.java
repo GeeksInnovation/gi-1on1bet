@@ -6,8 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com._on1bet.authservice.exception.CountryCodeOrMobileNumberInvalidException;
@@ -26,7 +28,8 @@ import static com._on1bet.authservice.util.Constants.ISO_CODE_IN;
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID;
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS;
 
-@SpringBootTest
+
+@ExtendWith(MockitoExtension.class) 
 class RegisterServiceTest {
 
   @InjectMocks
@@ -48,7 +51,7 @@ class RegisterServiceTest {
   private UtilRepo utilRepo;
 
   @Test
-  void testGenerateOTP_Success() {
+  void test_generateOTP_Success() {
 
     Long mobileNo = 9876543210L;
     Integer countryCode = 55;
@@ -75,7 +78,7 @@ class RegisterServiceTest {
   }
 
   @Test
-  void testGenerateOTP_Failure_InvalidCountryCodeOrMobileNumber() {
+  void test_generateOTP_Failure_InvalidCountryCodeOrMobileNumber() {
 
     Long mobileNo = 9876543210L;
     Integer countryCode = 99999;
@@ -98,7 +101,7 @@ class RegisterServiceTest {
   }
 
   @Test
-  void testGenerateOTP_Failure_InvalidCountryCodeOrMobileNumber_through_Google_i18n() {
+  void test_generateOTP_Failure_InvalidCountryCodeOrMobileNumber_through_Google_i18n() {
     Long mobileNo = 9876543210L;
     Integer countryCode = 55;
     String isoCode = ISO_CODE_IN;
@@ -121,7 +124,7 @@ class RegisterServiceTest {
   }
 
   @Test
-  void testGenerateOTP_Failure_UserAldreadyExits() {
+  void test_generateOTP_Failure_UserAldreadyExits() {
 
     Long mobileNo = 9876543210L;
     Integer countryCode = 55;

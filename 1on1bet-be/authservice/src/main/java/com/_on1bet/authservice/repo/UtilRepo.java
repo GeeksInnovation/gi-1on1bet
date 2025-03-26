@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono;
 public interface UtilRepo {
 
     Mono<String> getIsoCodeFromId(Integer id);
-    List<CountryCodeDetailsProj> fetchCountryCodeDetails();
+    Mono<List<CountryCodeDetailsProj>> fetchCountryCodeDetails();
     
 }

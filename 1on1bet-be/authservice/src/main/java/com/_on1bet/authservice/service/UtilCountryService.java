@@ -10,6 +10,8 @@ import com._on1bet.authservice.repo.UtilRepo;
 import com._on1betutils.utils1on1bet._on1BetResponse;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class UtilCountryService {
 
@@ -21,10 +23,12 @@ public class UtilCountryService {
         this._on1betResponseBuilder = _on1betResponseBuilder;
     }
 
-    public _on1BetResponse<CountryCodeListResponse> getAllCountryCode() {
-        List<CountryCodeDetailsProj> listOfCountryCodes = utilRepo.fetchCountryCodeDetails();
-        return _on1betResponseBuilder.buildSuccessResponse(CountryCodeListResponse.builder()
-        .countryCodeList(listOfCountryCodes).build());
+    public Mono<_on1BetResponse<CountryCodeListResponse>> getAllCountryCode() {
+        return utilRepo.fetchCountryCodeDetails()
+                .map(listOfCountryCodes -> _on1betResponseBuilder.buildSuccessResponse(
+                        CountryCodeListResponse.builder()
+                                .countryCodeList(listOfCountryCodes)
+                                .build()));
     }
 
 }

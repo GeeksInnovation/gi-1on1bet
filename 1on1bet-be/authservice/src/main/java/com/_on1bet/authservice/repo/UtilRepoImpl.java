@@ -30,12 +30,12 @@ public class UtilRepoImpl implements UtilRepo {
     }
 
     @Override
-    public List<CountryCodeDetailsProj> fetchCountryCodeDetails() {
+    public Mono<List<CountryCodeDetailsProj>> fetchCountryCodeDetails() {
         String sql = "SELECT id, name, dial_code FROM country_code";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new CountryCodeDetailsProj(
+        return Mono.just(jdbcTemplate.query(sql, (rs, rowNum) -> new CountryCodeDetailsProj(
                 rs.getInt("id"),
                 rs.getString("name"),
-                rs.getString("dial_code")));
+                rs.getString("dial_code"))));
     }
 
 }
