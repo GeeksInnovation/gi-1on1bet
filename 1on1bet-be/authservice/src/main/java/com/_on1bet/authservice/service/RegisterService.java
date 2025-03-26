@@ -30,7 +30,7 @@ public class RegisterService {
     private final UtilRepo utilRepo;
 
     public RegisterService(ValidationUtil validationUtil, _on1BetResponseBuilder _on1betResponseBuilder,
-            UserDetailsRepo userDetailsRepo, RedisService redisService, UtilRepo utilRepo) {
+        UserDetailsRepo userDetailsRepo, RedisService redisService, UtilRepo utilRepo) {
         this.validationUtil = validationUtil;
         this._on1betResponseBuilder = _on1betResponseBuilder;
         this.userDetailsRepo = userDetailsRepo;
@@ -38,13 +38,13 @@ public class RegisterService {
         this.utilRepo = utilRepo;
     }
 
-    public Mono<_on1BetResponse<OTPResponse>>  generateOTP(Long mobileNo, Integer countryCode) {
+    public Mono<_on1BetResponse<OTPResponse>> generateOTP(Long mobileNo, Integer countryCode) {
 
         return extractCountryCode(countryCode)
-        .flatMap(isoCode -> validateMobileNumber(mobileNo, isoCode))
-        .flatMap(valid -> checkUserExists(mobileNo))
-        .flatMap(valid -> generateOtp(mobileNo))
-        .onErrorResume(this::handleError);
+                .flatMap(isoCode -> validateMobileNumber(mobileNo, isoCode))
+                .flatMap(valid -> checkUserExists(mobileNo))
+                .flatMap(valid -> generateOtp(mobileNo))
+                .onErrorResume(this::handleError);
     }
 
     private Mono<String> extractCountryCode(Integer countryCode) {
@@ -54,19 +54,20 @@ public class RegisterService {
 
     private Mono<Boolean> validateMobileNumber(Long mobileNo, String isoCode) {
         return validationUtil.validMobileNumber(mobileNo.toString(), isoCode)
-            ? Mono.just(true)
-            : Mono.error(new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID));
+                .filter(valid -> valid)
+                .switchIfEmpty(Mono.error(
+                    new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID)));
     }
 
     private Mono<Boolean> checkUserExists(Long mobileNo) {
         return userDetailsRepo.existsById(mobileNo)
-            ? Mono.error(new UserAldreadyExitException(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS))
-            : Mono.just(true);
+                ? Mono.error(new UserAldreadyExitException(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS))
+                : Mono.just(true);
     }
 
     private Mono<_on1BetResponse<OTPResponse>> generateOtp(Long mobileNo) {
         return redisService.generateAndStoreOTP(mobileNo)
-            .map(otp -> _on1betResponseBuilder.buildSuccessResponse(OTPResponse.builder().otp(otp).build()));
+                .map(otp -> _on1betResponseBuilder.buildSuccessResponse(OTPResponse.builder().otp(otp).build()));
     }
 
     private Mono<_on1BetResponse<OTPResponse>> handleError(Throwable ex) {

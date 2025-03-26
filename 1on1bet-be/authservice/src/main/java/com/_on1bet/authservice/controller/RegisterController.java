@@ -1,6 +1,5 @@
 package com._on1bet.authservice.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +27,7 @@ public class RegisterController {
 
     @PostMapping("verify/mobileno")
     public Mono<_on1BetResponse<OTPResponse>>  generateOTP(@RequestParam("mobileno") @Nonnull Long mobileNo,
-            @RequestParam("countrycode") @Nonnull Integer countrycodeid) throws NumberParseException {
+        @RequestParam("countrycode") @Nonnull Integer countrycodeid) throws NumberParseException {
         log.info("Validation and generating otp handler starts");
         return registerService.generateOTP(mobileNo, countrycodeid);  
     }
