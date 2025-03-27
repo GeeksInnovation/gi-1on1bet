@@ -2,12 +2,14 @@ package com._on1bet.authservice.service;
 
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS;
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID;
+import static com._on1bet.authservice.util.Constants.INVALID_OTP;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com._on1bet.authservice.entity.UserDetails;
 import com._on1bet.authservice.exception.CountryCodeOrMobileNumberInvalidException;
+import com._on1bet.authservice.exception.InvalidOTPException;
 import com._on1bet.authservice.exception.UserAldreadyExitException;
 import com._on1bet.authservice.model.request.RegsiterUserRequest;
 import com._on1bet.authservice.model.response.OTPResponse;
@@ -34,7 +36,7 @@ public class RegisterService {
     private final UtilRepo utilRepo;
 
     public RegisterService(ValidationUtil validationUtil, _on1BetResponseBuilder _on1betResponseBuilder,
-        UserDetailsRepo userDetailsRepo, RedisService redisService, UtilRepo utilRepo) {
+            UserDetailsRepo userDetailsRepo, RedisService redisService, UtilRepo utilRepo) {
         this.validationUtil = validationUtil;
         this._on1betResponseBuilder = _on1betResponseBuilder;
         this.userDetailsRepo = userDetailsRepo;
@@ -52,9 +54,11 @@ public class RegisterService {
 
     public Mono<_on1BetResponse<RegisterUserResponse>> registerUser(RegsiterUserRequest regsiterUserRequest) {
         return validateOTP(regsiterUserRequest.getMobileNo(), regsiterUserRequest.getEnteredOTP())
-                .flatMap(isValid -> isValid ? saveUser(regsiterUserRequest) : Mono.error(new Throwable()))
+                .flatMap(isValid -> isValid ? saveUser(regsiterUserRequest) : 
+                    Mono.error(new InvalidOTPException(INVALID_OTP)))
                 .map(userId -> RegisterUserResponse.builder().userId(userId).build())
-                .map(registerUserResponse -> _on1betResponseBuilder.buildSuccessResponse(registerUserResponse));
+                .map(registerUserResponse -> _on1betResponseBuilder.buildSuccessResponse(registerUserResponse))
+                .onErrorResume(this::handleError);
     }
 
     private Mono<Boolean> validateOTP(Long mobileNo, String enteredOTP) {
@@ -64,7 +68,7 @@ public class RegisterService {
     private Mono<String> saveUser(RegsiterUserRequest regsiterUserRequest) {
         String userId = UserIDGenerator.generateUserId();
         UserDetails userDetails = UserDetails.builder().mobileNo(regsiterUserRequest.getMobileNo()).userId(userId)
-            .countryCodeDetails(regsiterUserRequest.getCountryCode()).build();
+                .countryCodeDetails(regsiterUserRequest.getCountryCode()).build();
         return userDetailsRepo.save(userDetails).map(UserDetails::getUserId);
     }
 
@@ -77,7 +81,7 @@ public class RegisterService {
         return validationUtil.validMobileNumber(mobileNo.toString(), isoCode)
                 .filter(valid -> valid)
                 .switchIfEmpty(Mono.error(
-                    new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID)));
+                        new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID)));
     }
 
     private Mono<Boolean> checkUserExists(Long mobileNo) {
@@ -91,8 +95,9 @@ public class RegisterService {
                 .map(otp -> _on1betResponseBuilder.buildSuccessResponse(OTPResponse.builder().otp(otp).build()));
     }
 
-    private Mono<_on1BetResponse<OTPResponse>> handleError(Throwable ex) {
-        if (ex instanceof UserAldreadyExitException || ex instanceof CountryCodeOrMobileNumberInvalidException) {
+    private <T> Mono<_on1BetResponse<T>> handleError(Throwable ex) {
+        if (ex instanceof UserAldreadyExitException || ex instanceof CountryCodeOrMobileNumberInvalidException
+                || ex instanceof InvalidOTPException) {
             return Mono.just(_on1betResponseBuilder.buildFailureResponse(ex.getMessage()));
         }
         return Mono.error(ex);

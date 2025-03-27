@@ -1,12 +1,8 @@
 package com._on1bet.authservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +19,6 @@ import com._on1bet.authservice.model.response.RegisterUserResponse;
 import com._on1bet.authservice.repo.UserDetailsRepo;
 import com._on1bet.authservice.repo.UtilRepo;
 import com._on1bet.authservice.util.RedisService;
-import com._on1bet.authservice.util.UserIDGenerator;
 import com._on1bet.authservice.util.ValidationUtil;
 import com._on1betutils.utils1on1bet._on1BetResponse;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
@@ -157,13 +152,13 @@ class RegisterServiceTest {
   }
 
   @Test
-  void test_saveUser_Success() {
+  void test_registerUser_Success() {
 
     String userId = "1ON1HY78Y9";
     _on1BetResponse<Object> successResponse = new _on1BetResponse<Object>(true, null,
         RegisterUserResponse.builder().userId(userId).build());
 
-    UserDetails userDetails = UserDetails.builder().build();
+    UserDetails userDetails = UserDetails.builder().userId(userId).build();
 
     RegsiterUserRequest regsiterUserRequest = RegsiterUserRequest.builder().countryCode(55).enteredOTP("123456")
         .mobileNo(9876543210L).build();
@@ -176,6 +171,7 @@ class RegisterServiceTest {
         .assertNext(response -> {
           assertNotNull(response);
           assertEquals(true, response.getServiceStatus());
+          assertEquals(userId, response.getData().getUserId());
         })
         .verifyComplete();
   }
@@ -183,19 +179,21 @@ class RegisterServiceTest {
   @Test
   void test_verifyOTP_Failure() {
 
-    Long mobileNo = 9876543210L;
-    String generatedOTP = "123456";
-
-    _on1BetResponse<Object> failureResponse = new _on1BetResponse<Object>(false, INVALID_OTP, null);
+    _on1BetResponse<Object> failureResponse = new _on1BetResponse<Object>(false, INVALID_OTP,
+        null);
+    RegsiterUserRequest regsiterUserRequest = RegsiterUserRequest.builder().countryCode(55).enteredOTP("123456")
+        .mobileNo(9876543210L).build();
 
     when(redisService.validateOTP(any(), any())).thenReturn(Mono.just(false));
-    lenient().when(_on1betResponseBuilder.buildFailureResponse(any()))
+    when(_on1betResponseBuilder.buildFailureResponse(any(String.class)))
         .thenReturn(failureResponse);
 
-    StepVerifier.create(registerService.verifyOTP(mobileNo, generatedOTP)).assertNext((response) -> {
-      assertNotNull(response);
-      assertFalse(response.getServiceStatus());
-    }).verifyComplete();
+    StepVerifier.create(registerService.registerUser(regsiterUserRequest))
+        .assertNext(response -> {
+          assertNotNull(response);
+          assertEquals(false, response.getServiceStatus());
+        })
+        .verifyComplete();
   }
 
 }

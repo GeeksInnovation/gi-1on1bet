@@ -18,6 +18,7 @@ import com._on1bet.authservice.repo.UtilRepo;
 import com._on1betutils.utils1on1bet._on1BetResponse;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -38,7 +39,7 @@ public class UtilCountryServiceTest {
 
         CountryCodeListResponse mockResponse = new CountryCodeListResponse(List.of());
 
-        when(utilRepo.fetchCountryCodeDetails()).thenReturn(Mono.just(Collections.emptyList()));
+        when(utilRepo.fetchCountryCodeDetails()).thenReturn(Flux.empty());
         when(_on1betResponseBuilder.buildSuccessResponse(any()))
                 .thenReturn(new _on1BetResponse<>(true, null, mockResponse));
 
