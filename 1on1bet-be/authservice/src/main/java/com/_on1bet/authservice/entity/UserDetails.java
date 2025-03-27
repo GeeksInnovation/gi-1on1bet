@@ -1,11 +1,18 @@
 package com._on1bet.authservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Table("user_details")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserDetails {
 
     @Id

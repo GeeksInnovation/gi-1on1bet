@@ -6,12 +6,16 @@ import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_COUNT
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com._on1bet.authservice.entity.UserDetails;
 import com._on1bet.authservice.exception.CountryCodeOrMobileNumberInvalidException;
 import com._on1bet.authservice.exception.UserAldreadyExitException;
+import com._on1bet.authservice.model.request.RegsiterUserRequest;
 import com._on1bet.authservice.model.response.OTPResponse;
+import com._on1bet.authservice.model.response.RegisterUserResponse;
 import com._on1bet.authservice.repo.UserDetailsRepo;
 import com._on1bet.authservice.repo.UtilRepo;
 import com._on1bet.authservice.util.RedisService;
+import com._on1bet.authservice.util.UserIDGenerator;
 import com._on1bet.authservice.util.ValidationUtil;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 import com._on1betutils.utils1on1bet._on1BetResponse;
@@ -39,12 +43,29 @@ public class RegisterService {
     }
 
     public Mono<_on1BetResponse<OTPResponse>> generateOTP(Long mobileNo, Integer countryCode) {
-
         return extractCountryCode(countryCode)
                 .flatMap(isoCode -> validateMobileNumber(mobileNo, isoCode))
                 .flatMap(valid -> checkUserExists(mobileNo))
                 .flatMap(valid -> generateOtp(mobileNo))
                 .onErrorResume(this::handleError);
+    }
+
+    public Mono<_on1BetResponse<RegisterUserResponse>> registerUser(RegsiterUserRequest regsiterUserRequest) {
+        return validateOTP(regsiterUserRequest.getMobileNo(), regsiterUserRequest.getEnteredOTP())
+                .flatMap(isValid -> isValid ? saveUser(regsiterUserRequest) : Mono.error(new Throwable()))
+                .map(userId -> RegisterUserResponse.builder().userId(userId).build())
+                .map(registerUserResponse -> _on1betResponseBuilder.buildSuccessResponse(registerUserResponse));
+    }
+
+    private Mono<Boolean> validateOTP(Long mobileNo, String enteredOTP) {
+        return redisService.validateOTP(mobileNo, enteredOTP);
+    }
+
+    private Mono<String> saveUser(RegsiterUserRequest regsiterUserRequest) {
+        String userId = UserIDGenerator.generateUserId();
+        UserDetails userDetails = UserDetails.builder().mobileNo(regsiterUserRequest.getMobileNo()).userId(userId)
+            .countryCodeDetails(regsiterUserRequest.getCountryCode()).build();
+        return userDetailsRepo.save(userDetails).map(UserDetails::getUserId);
     }
 
     private Mono<String> extractCountryCode(Integer countryCode) {
@@ -60,9 +81,9 @@ public class RegisterService {
     }
 
     private Mono<Boolean> checkUserExists(Long mobileNo) {
-        return userDetailsRepo.existsById(mobileNo)
-                ? Mono.error(new UserAldreadyExitException(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS))
-                : Mono.just(true);
+        return userDetailsRepo.existsById(mobileNo).filter(isUserExit -> !isUserExit)
+                .switchIfEmpty(Mono.error(new UserAldreadyExitException(ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS)));
+
     }
 
     private Mono<_on1BetResponse<OTPResponse>> generateOtp(Long mobileNo) {

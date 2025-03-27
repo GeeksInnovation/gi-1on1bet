@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OTPResponse {
-
-    private String otp;
+public class RegisterUserResponse {
+    private String userId;
 
 }

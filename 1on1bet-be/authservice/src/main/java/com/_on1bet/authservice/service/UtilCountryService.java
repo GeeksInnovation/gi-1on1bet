@@ -22,6 +22,7 @@ public class UtilCountryService {
 
     public Mono<_on1BetResponse<CountryCodeListResponse>> getAllCountryCode() {
         return utilRepo.fetchCountryCodeDetails()
+                .collectList()
                 .map(listOfCountryCodes -> _on1betResponseBuilder.buildSuccessResponse(
                         CountryCodeListResponse.builder()
                                 .countryCodeList(listOfCountryCodes)
