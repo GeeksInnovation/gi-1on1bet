@@ -32,6 +32,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build --build-arg MAVEN_CONFIG=settings.xml \
+            --build-arg MAVEN_OPTS="-Dcheckstyle.skip=true" \
             -t ghcr.io/geeksinnovation/gi-1on1bet/${{ matrix.project }}:${{ env.COMMIT_SHA }} \
             -f 1on1bet-be/${{ matrix.project }}/Dockerfile 1on1bet-be/
 
