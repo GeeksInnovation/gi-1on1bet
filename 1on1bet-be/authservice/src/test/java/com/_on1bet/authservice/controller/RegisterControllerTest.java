@@ -2,46 +2,53 @@ package com._on1bet.authservice.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com._on1bet.authservice.service.RegisterService;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@WebMvcTest(RegisterController.class) 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 class RegisterControllerTest {
 
     @Autowired
-    private MockMvc mockMvc; 
+    private WebTestClient webTestClient;
 
     @MockitoBean
     RegisterService registerService;
-    
+
     @Test
     void invalidEndpoint() throws Exception {
-        mockMvc.perform(post("/auth/invalid/endpoint")
-        .param("mobileno", "")
-        .param("countrycode", ""))
-        .andExpect(status().isNotFound());
+        webTestClient.post()
+                .uri("/api/invalid/endpoint")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
-    void testFirstTimeMobileNoRegisterHandlerWithInValidValues() throws Exception {
-        mockMvc.perform(post("/auth/v1/register/verify/mobileno")
-                .param("mobileno", "")
-                .param("countrycode", ""))
-                .andExpect(status().isBadRequest());
+    void testFirstTimeMobileNoRegisterHandlerWithEmptyValues() throws Exception {
+        webTestClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/register/verify/mobileno")
+                        .queryParam("mobileno", "")
+                        .queryParam("countrycode", "")
+                        .build())
+                .exchange()
+                .expectStatus().isBadRequest();
     }
+
 
     @Test
     void testFirstTimeMobileNoRegisterHandlerWithValidValues() throws Exception {
-        mockMvc.perform(post("/auth/v1/register/verify/mobileno")
-        .param("mobileno", "9876543210")
-        .param("countrycode", "5"))
-        .andExpect(status().isOk());
+        webTestClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/register/verify/mobileno")
+                        .queryParam("mobileno", "9876543210")
+                        .queryParam("countrycode", "5")
+                        .build())
+                .exchange()
+                .expectStatus().isOk();
     }
-    
-}
+} 

@@ -22,10 +22,10 @@ jobs:
           echo "Current Directory: $(pwd)"
 
       - name: Run Tests for All Projects
+        working-directory: 1on1bet-be
         run: |
-          cd 1on1bet-be
           for project in */; do
-            if [ -d "$project" ]; then
+            if [ -d "$project" ] && [ -f "$project/pom.xml" ]; then
               echo "Running tests for $project..."
               cd "$project"
               mvn clean test

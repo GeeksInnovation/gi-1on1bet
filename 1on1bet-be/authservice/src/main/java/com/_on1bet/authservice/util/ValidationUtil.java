@@ -7,20 +7,21 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
 public class ValidationUtil {
 
-    public boolean validMobileNumber(String mobileNo, String countryCode) throws NumberParseException {
+    public Mono<Boolean> validMobileNumber(String mobileNo, String countryCode) {
 
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         try {
             Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(mobileNo, countryCode);
-            return phoneUtil.isValidNumber(phoneNumber);
+            return Mono.just(phoneUtil.isValidNumber(phoneNumber));
         } catch (NumberParseException e) {
             log.error("Invalid mobile number or country code", e);
-            return false;
+            return Mono.just(false);
         }
     }
 
