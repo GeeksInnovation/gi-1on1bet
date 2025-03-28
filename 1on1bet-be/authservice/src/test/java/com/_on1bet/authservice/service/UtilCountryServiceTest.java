@@ -3,8 +3,6 @@ package com._on1bet.authservice.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import com._on1betutils.utils1on1bet._on1BetResponse;
 import com._on1betutils.utils1on1bet._on1BetResponseBuilder;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)

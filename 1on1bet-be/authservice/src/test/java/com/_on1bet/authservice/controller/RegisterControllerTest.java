@@ -1,10 +1,10 @@
 package com._on1bet.authservice.controller;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com._on1bet.authservice.service.RegisterService;
@@ -16,7 +16,7 @@ class RegisterControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @Mock
+    @MockitoBean
     RegisterService registerService;
 
     @Test
@@ -28,7 +28,7 @@ class RegisterControllerTest {
     }
 
     @Test
-    void testFirstTimeMobileNoRegisterHandlerWithInValidValues() throws Exception {
+    void testFirstTimeMobileNoRegisterHandlerWithEmptyValues() throws Exception {
         webTestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/register/verify/mobileno")
@@ -51,4 +51,4 @@ class RegisterControllerTest {
                 .exchange()
                 .expectStatus().isOk();
     }
-}
+} 
