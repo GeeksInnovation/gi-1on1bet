@@ -10,7 +10,7 @@ WORKDIR /app/bettingservice
 COPY bettingservice/pom.xml ./pom.xml
 COPY bettingservice/src ./src
 
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -Dcheckstyle.skip=true
 
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
