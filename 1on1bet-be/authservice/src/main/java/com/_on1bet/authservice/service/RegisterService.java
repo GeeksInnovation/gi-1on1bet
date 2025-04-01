@@ -12,6 +12,7 @@ import com._on1bet.authservice.exception.CountryCodeOrMobileNumberInvalidExcepti
 import com._on1bet.authservice.exception.InvalidOTPException;
 import com._on1bet.authservice.exception.UserAldreadyExitException;
 import com._on1bet.authservice.model.request.RegsiterUserRequest;
+import com._on1bet.authservice.model.request.SaveProfileDetailsRequest;
 import com._on1bet.authservice.model.response.OTPResponse;
 import com._on1bet.authservice.model.response.RegisterUserResponse;
 import com._on1bet.authservice.repo.UserDetailsRepo;
@@ -59,6 +60,10 @@ public class RegisterService {
                 .map(userId -> RegisterUserResponse.builder().userId(userId).build())
                 .map(registerUserResponse -> _on1betResponseBuilder.buildSuccessResponse(registerUserResponse))
                 .onErrorResume(this::handleError);
+    }
+
+    public String saveProfileDetails(SaveProfileDetailsRequest saveProfileDetailsRequest) {
+        return null;
     }
 
     private Mono<Boolean> validateOTP(Long mobileNo, String enteredOTP) {
