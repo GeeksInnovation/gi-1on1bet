@@ -5,7 +5,7 @@ COPY settings.xml /root/.m2/settings.xml
 RUN cat /root/.m2/settings.xml 
 COPY pom.xml ./pom.xml
 
-WORKDIR /app/bettingservice
+WORKDIR /app/dashboardservice
 
 COPY dashboardservice/pom.xml ./pom.xml
 COPY dashboardservice/src ./src
