@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._on1bet.authservice.model.request.RegsiterUserRequest;
+import com._on1bet.authservice.model.request.SaveProfileDetailsRequest;
 import com._on1bet.authservice.model.response.OTPResponse;
 import com._on1bet.authservice.model.response.RegisterUserResponse;
 import com._on1bet.authservice.service.RegisterService;
@@ -42,4 +43,9 @@ public class RegisterController {
         return registerService.registerUser(userDetailsRequest);
     }
 
+    @PostMapping("profile/save/user")
+    public String postMethodName(@RequestBody SaveProfileDetailsRequest saveProfileDetailsRequest) {
+        log.info("Save profile details for user handler starts");
+        return registerService.saveProfileDetails(saveProfileDetailsRequest);
+    }
 }

@@ -16,8 +16,9 @@
 
     <modules>
         <module>authservice</module>
-		<!-- <module>bettingservice</module>
-		<module>paymentservice</module> -->
+		<module>bettingservice</module>
+		<module>dashboardservice</module>
+		<module>paymentservice</module>
     </modules>
 
 	<properties>
