@@ -32,21 +32,21 @@ public class RegisterController {
 
     @PostMapping("verify/mobileno")
     public Mono<_on1BetResponse<OTPResponse>> generateOTPHandler(@RequestParam("mobileno") @Nonnull Long mobileNo,
-            @RequestParam("countrycode") @Nonnull Integer countrycodeid) throws NumberParseException {
+        @RequestParam("countrycode") @Nonnull Integer countrycodeid) throws NumberParseException {
         log.info("Validation and generating otp handler starts");
         return registerService.generateOTP(mobileNo, countrycodeid);
     }
 
     @PostMapping("save/user")
     public Mono<_on1BetResponse<RegisterUserResponse>> saveUserHandler(
-            @RequestBody RegsiterUserRequest userDetailsRequest) {
+        @RequestBody RegsiterUserRequest userDetailsRequest) {
         log.info("Save user handler starts");
         return registerService.registerUser(userDetailsRequest);
     }
 
     @PostMapping("profile/save/user")
     public Mono<_on1BetResponse<SaveProfileDetailsResponse>> saveProfileDetailsHandler(
-            @RequestBody SaveProfileDetailsRequest saveProfileDetailsRequest) {
+        @RequestBody SaveProfileDetailsRequest saveProfileDetailsRequest) {
         log.info("Save profile details for user handler starts");
         return registerService.saveProfileDetails(saveProfileDetailsRequest);
     }

@@ -45,8 +45,8 @@ public class RegisterService {
     private final ProfileDetailsRepo profileDetailsRepo;
 
     public RegisterService(ValidationUtil validationUtil, _on1BetResponseBuilder _on1betResponseBuilder,
-            UserDetailsRepo userDetailsRepo, RedisService redisService, UtilRepo utilRepo,
-            PasswordEncoder passwordEncoder, ProfileDetailsRepo profileDetailsRepo) {
+        UserDetailsRepo userDetailsRepo, RedisService redisService, UtilRepo utilRepo,
+        PasswordEncoder passwordEncoder, ProfileDetailsRepo profileDetailsRepo) {
         this.validationUtil = validationUtil;
         this._on1betResponseBuilder = _on1betResponseBuilder;
         this.userDetailsRepo = userDetailsRepo;
@@ -74,7 +74,7 @@ public class RegisterService {
     }
 
     public Mono<_on1BetResponse<SaveProfileDetailsResponse>> saveProfileDetails(
-            SaveProfileDetailsRequest saveProfileDetailsRequest) {
+        SaveProfileDetailsRequest saveProfileDetailsRequest) {
 
         return userDetailsRepo.existsById(saveProfileDetailsRequest.getUserId())
                 .filter(userDetails -> userDetails)
@@ -94,8 +94,8 @@ public class RegisterService {
     private Mono<String> saveUser(RegsiterUserRequest regsiterUserRequest) {
         String userId = UserIDGenerator.generateUserId();
         UserDetails userDetails = UserDetails.builder()
-                .mobileNo(regsiterUserRequest.getMobileNo().toString()).userId(userId)
-                .countryCodeDetails(regsiterUserRequest.getCountryCode()).build();
+            .mobileNo(regsiterUserRequest.getMobileNo().toString()).userId(userId)
+            .countryCodeDetails(regsiterUserRequest.getCountryCode()).build();
         return userDetailsRepo.save(userDetails).map(UserDetails::getUserId);
     }
 
@@ -108,7 +108,7 @@ public class RegisterService {
         return validationUtil.validMobileNumber(mobileNo.toString(), isoCode)
                 .filter(valid -> valid)
                 .switchIfEmpty(Mono.error(
-                        new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID)));
+                    new CountryCodeOrMobileNumberInvalidException(ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID)));
     }
 
     private Mono<Boolean> checkUserExists(Long mobileNo) {
@@ -134,7 +134,7 @@ public class RegisterService {
 
     private <T> Mono<_on1BetResponse<T>> handleError(Throwable ex) {
         if (ex instanceof UserAldreadyExitException || ex instanceof CountryCodeOrMobileNumberInvalidException
-                || ex instanceof InvalidOTPException || ex instanceof UserNotAvailableException) {
+            || ex instanceof InvalidOTPException || ex instanceof UserNotAvailableException) {
             return Mono.just(_on1betResponseBuilder.buildFailureResponse(ex.getMessage()));
         }
         return Mono.error(ex);
