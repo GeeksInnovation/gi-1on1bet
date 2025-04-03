@@ -138,6 +138,12 @@
 									</limits>
 								</rule>
 							</rules>
+							<excludes>
+								<exclude>**/entity/**</exclude>
+								<exclude>**/config/**</exclude>
+								<exclude>**/exception/**</exclude>
+								<exclude>**/projection/**</exclude>
+                        </excludes>
 						</configuration>
        			 </execution>
 				</executions>
