@@ -10,6 +10,7 @@ import com._on1bet.authservice.model.request.RegsiterUserRequest;
 import com._on1bet.authservice.model.request.SaveProfileDetailsRequest;
 import com._on1bet.authservice.model.response.OTPResponse;
 import com._on1bet.authservice.model.response.RegisterUserResponse;
+import com._on1bet.authservice.model.response.SaveProfileDetailsResponse;
 import com._on1bet.authservice.service.RegisterService;
 import com._on1betutils.utils1on1bet._on1BetResponse;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -31,20 +32,21 @@ public class RegisterController {
 
     @PostMapping("verify/mobileno")
     public Mono<_on1BetResponse<OTPResponse>> generateOTPHandler(@RequestParam("mobileno") @Nonnull Long mobileNo,
-        @RequestParam("countrycode") @Nonnull Integer countrycodeid) throws NumberParseException {
+            @RequestParam("countrycode") @Nonnull Integer countrycodeid) throws NumberParseException {
         log.info("Validation and generating otp handler starts");
         return registerService.generateOTP(mobileNo, countrycodeid);
     }
 
     @PostMapping("save/user")
     public Mono<_on1BetResponse<RegisterUserResponse>> saveUserHandler(
-        @RequestBody RegsiterUserRequest userDetailsRequest) {
+            @RequestBody RegsiterUserRequest userDetailsRequest) {
         log.info("Save user handler starts");
         return registerService.registerUser(userDetailsRequest);
     }
 
     @PostMapping("profile/save/user")
-    public String postMethodName(@RequestBody SaveProfileDetailsRequest saveProfileDetailsRequest) {
+    public Mono<_on1BetResponse<SaveProfileDetailsResponse>> saveProfileDetailsHandler(
+            @RequestBody SaveProfileDetailsRequest saveProfileDetailsRequest) {
         log.info("Save profile details for user handler starts");
         return registerService.saveProfileDetails(saveProfileDetailsRequest);
     }

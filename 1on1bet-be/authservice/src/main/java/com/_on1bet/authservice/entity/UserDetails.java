@@ -1,7 +1,9 @@
 package com._on1bet.authservice.entity;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.lang.Nullable;
 
@@ -15,17 +17,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDetails implements Persistable<Long> {
+public class UserDetails implements Persistable<String> {
+
+    @Column("mobile_no")
+    private String mobileNo;
 
     @Id
-    private Long mobileNo;
+    @Column("user_id")
     private String userId;
+
+    @Column("country_code_details")
     private Integer countryCodeDetails;
+
+    @Column("created_at")
+    private LocalDateTime createdAt;
 
     @Override
     @Nullable
-    public Long getId() {
-        return mobileNo;
+    public String getId() {
+        return userId;
     }
 
     @Override

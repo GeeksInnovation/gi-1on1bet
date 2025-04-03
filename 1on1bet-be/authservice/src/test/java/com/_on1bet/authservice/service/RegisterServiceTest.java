@@ -28,7 +28,7 @@ import reactor.test.StepVerifier;
 
 import static com._on1bet.authservice.util.Constants.ISO_CODE_IN;
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_COUNTRY_CODE_INVALID;
-import static com._on1bet.authservice.util.Constants.INVALID_OTP;
+import static com._on1bet.authservice.util.Constants.ERR_MSG_INVALID_OTP;
 import static com._on1bet.authservice.util.Constants.ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +62,7 @@ class RegisterServiceTest {
 
     when(utilRepo.getIsoCodeFromId(countryCode)).thenReturn(Mono.just(isoCode));
     when(validationUtil.validMobileNumber(mobileNo.toString(), isoCode)).thenReturn(Mono.just(true));
-    when(userDetailsRepo.existsById(mobileNo)).thenReturn(Mono.just(false));
+    when(userDetailsRepo.existsByMobileNo(mobileNo.toString())).thenReturn(Mono.just(false));
     when(redisService.generateAndStoreOTP(mobileNo)).thenReturn(Mono.just(generatedOtp));
 
     _on1BetResponse<OTPResponse> successResponse = new _on1BetResponse<>(true, null, new OTPResponse(generatedOtp));
@@ -134,7 +134,7 @@ class RegisterServiceTest {
 
     when(utilRepo.getIsoCodeFromId(countryCode)).thenReturn(Mono.just(isoCode));
     when(validationUtil.validMobileNumber(mobileNo.toString(), isoCode)).thenReturn(Mono.just(true));
-    when(userDetailsRepo.existsById(mobileNo)).thenReturn(Mono.just(true));
+    when(userDetailsRepo.existsByMobileNo(mobileNo.toString())).thenReturn(Mono.just(true));
 
     _on1BetResponse<Object> failureResponse = new _on1BetResponse<>(false,
         ERR_MSG_MOBILE_NUMBER_ALDREADY_EXITS, null);
@@ -179,7 +179,7 @@ class RegisterServiceTest {
   @Test
   void test_verifyOTP_Failure() {
 
-    _on1BetResponse<Object> failureResponse = new _on1BetResponse<Object>(false, INVALID_OTP,
+    _on1BetResponse<Object> failureResponse = new _on1BetResponse<Object>(false, ERR_MSG_INVALID_OTP,
         null);
     RegsiterUserRequest regsiterUserRequest = RegsiterUserRequest.builder().countryCode(55).enteredOTP("123456")
         .mobileNo(9876543210L).build();
